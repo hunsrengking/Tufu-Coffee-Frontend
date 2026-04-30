@@ -1,7 +1,9 @@
-import React from 'react'
-
-
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import ChangePasswordModal from './ChangePasswordModal'
 const UserList = () => {
+  const navigate = useNavigate();
+
   const users = [
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', joined: 'Mar 12, 2024' },
     { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Staff', status: 'Active', joined: 'Feb 28, 2024' },
@@ -15,6 +17,33 @@ const UserList = () => {
     Inactive: 'bg-slate-100 text-slate-700',
   }
 
+  // Modal States
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  // Handlers
+  const handleCreateUser = () => {
+    navigate('/users/create');
+  };
+
+  const handleEditUser = (user) => {
+    navigate(`/users/edit/${user.id}`);
+  };
+
+  const handleViewUser = (user) => {
+    navigate(`/users/${user.id}`);
+  };
+
+  const handleChangePassword = (user) => {
+    setSelectedUser(user);
+    setIsPasswordOpen(true);
+  };
+
+  const handleSavePassword = (userId, newPassword) => {
+    // In a real app, make API call here
+    console.log('Changed password for user:', userId);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -22,7 +51,7 @@ const UserList = () => {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
           <p className="text-slate-500 font-medium tracking-tight mt-1">Manage and monitor accounts across your coffee shop network.</p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
+        <button onClick={handleCreateUser} className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
           <i className="fa-solid fa-plus text-sm"></i>
           Create User
         </button>
@@ -80,10 +109,16 @@ const UserList = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{user.joined}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium pr-6">
                     <div className="flex items-center justify-end gap-2">
-                     <button className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                     <button onClick={() => handleViewUser(user)} className="p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="View Details">
+                        <i className="fa-solid fa-eye text-sm"></i>
+                     </button>
+                     <button onClick={() => handleEditUser(user)} className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Edit User">
                         <i className="fa-solid fa-pen text-sm"></i>
                      </button>
-                     <button className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                     <button onClick={() => handleChangePassword(user)} className="p-2 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Change Password">
+                        <i className="fa-solid fa-key text-sm"></i>
+                     </button>
+                     <button className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete User">
                         <i className="fa-solid fa-trash text-sm"></i>
                      </button>
                     </div>
@@ -102,6 +137,14 @@ const UserList = () => {
            </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <ChangePasswordModal 
+        isOpen={isPasswordOpen} 
+        onClose={() => setIsPasswordOpen(false)} 
+        user={selectedUser} 
+        onSave={handleSavePassword} 
+      />
     </div>
   )
 }
