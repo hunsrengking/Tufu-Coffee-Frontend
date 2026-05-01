@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../api/resourceApi';
+import { authService } from '../services/auth.service';
+import { permissions } from '../utils/permission';
+
 
 export const AuthContext = createContext();
 
@@ -20,13 +22,17 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authService.login(credentials);
-      const { token, ...userData } = response.data.data;
+      const authData = response.data.data || response.data;
+      const { token, ...userData } = authData;
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      setUser(userData);
-      return { success: true };
+      if (token) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        return { success: true };
+      }
+      
+      throw new Error('No token received from server');
     } catch (error) {
       console.error('Login error:', error);
       return {
@@ -43,11 +49,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const hasPermission = (permission) => {
-    if (!user || !user.permissions) return false;
-    if (Array.isArray(permission)) {
-      return permission.some(p => user.permissions.includes(p));
-    }
-    return user.permissions.includes(permission);
+    return permissions.has(user, permission);
   };
 
   return (

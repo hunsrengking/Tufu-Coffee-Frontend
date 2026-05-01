@@ -19,7 +19,7 @@ const ChangePasswordModal = ({ isOpen, onClose, user, onSave }) => {
     }
     
     setError('');
-    onSave(user.id, password);
+    onSave(user.id, { newPassword: password, confirmPassword: confirmPassword });
     setPassword('');
     setConfirmPassword('');
     onClose();

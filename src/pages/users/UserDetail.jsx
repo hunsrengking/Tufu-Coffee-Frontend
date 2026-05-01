@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { userService } from '../../api/resourceApi';
+import { userService } from '../../services/user.service';
 import ChangePasswordModal from './ChangePasswordModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import AlertMessage from '../../components/AlertMessage';
@@ -34,9 +34,9 @@ const UserDetail = () => {
     fetchUser();
   }, [id]);
 
-  const handleSavePassword = async (userId, newPassword) => {
+  const handleSavePassword = async (userId, passwordData) => {
     try {
-      await userService.changePassword(userId, { password: newPassword });
+      await userService.changePassword(userId, passwordData);
       setAlert({
         open: true,
         type: 'success',
@@ -56,12 +56,9 @@ const UserDetail = () => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
         await userService.deleteUser(id);
-        setAlert({
-          open: true,
-          type: 'success',
-          message: 'User deleted successfully!'
+        navigate('/users', {
+          state: { message: 'User deleted successfully!', type: 'success' }
         });
-        setTimeout(() => navigate('/users'), 1500);
       } catch (error) {
         setAlert({
           open: true,
@@ -149,6 +146,16 @@ const UserDetail = () => {
             </div>
 
             <div className="flex gap-4 items-start">
+              <div className="mt-1 text-sky-500 bg-sky-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i className="fa-solid fa-envelope-circle-check text-lg"></i>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Recovery Email</p>
+                <p className="text-base font-medium text-slate-900 break-all">{user.recovery_email || 'None Set'}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
               <div className="mt-1 text-emerald-500 bg-emerald-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
                 <i className="fa-solid fa-shield-halved text-lg"></i>
               </div>
@@ -182,7 +189,18 @@ const UserDetail = () => {
                 </span>
               </div>
             </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="mt-1 text-rose-500 bg-rose-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i className="fa-solid fa-id-badge text-lg"></i>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Linked Employee</p>
+                <p className="text-base font-medium text-slate-900">{user.employee_name || 'Not Linked'}</p>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 

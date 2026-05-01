@@ -21,11 +21,11 @@ const Sidebar = ({ isOpen = true }) => {
       title: 'Settings', 
       icon: 'fa-solid fa-gear', 
       path: '/settings', 
-      permission: 'READ_SETTING',
+      // permission: 'READ_SETTING',
       hasDropdown: true,
       subItems: [
-        { title: 'Brand', path: '/settings/Brand' },
-        { title: 'Security', path: '/settings/security' },
+        { title: 'Organization', path: '/settings/organization' },
+        { title: 'System', path: '/settings/system' },
         { title: 'Notifications', path: '/settings/notifications' }
       ]
     },
