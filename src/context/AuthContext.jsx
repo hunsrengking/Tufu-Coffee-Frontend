@@ -52,10 +52,47 @@ export const AuthProvider = ({ children }) => {
     return permissions.has(user, permission);
   };
 
+  const forgotPassword = async (email) => {
+    try {
+      const response = await authService.forgotPassword(email);
+      return { success: true, data: response.data.data };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Failed to send recovery code.' 
+      };
+    }
+  };
+
+  const resetPassword = async (resetData) => {
+    try {
+      const response = await authService.resetPassword(resetData);
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Failed to reset password.' 
+      };
+    }
+  };
+
+  const verifyOTP = async (verifyData) => {
+    try {
+      const response = await authService.verifyOTP(verifyData);
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Invalid or expired code.' 
+      };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, hasPermission }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, hasPermission, forgotPassword, resetPassword, verifyOTP }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 

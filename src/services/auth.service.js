@@ -19,7 +19,29 @@ export const authService = {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "/login";
+    },
+
+    /**
+     * Send forgot password request
+     */
+    forgotPassword: (email) => {
+        return api.post("/auth/forgotpassword", { email });
+    },
+
+    /**
+     * Verify OTP
+     */
+    verifyOTP: (verifyData) => {
+        return api.post("/auth/verifyotp", verifyData);
+    },
+
+    /**
+     * Reset password
+     */
+    resetPassword: (resetData) => {
+        return api.post("/auth/resetpassword", resetData);
     }
 };
+
 
 export default authService;
