@@ -1,166 +1,142 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { useAuth } from '../../hooks/useAuth'
+import AlertMessage from '../../components/AlertMessage'
 
 const Login = () => {
-    const [showPassword, setShowPassword] = useState(false)
+    const { login } = useAuth()
     const [isLoading, setIsLoading] = useState(false)
+    const [language, setLanguage] = useState('english')
+    const [credentials, setCredentials] = useState({ email: '', password: '' })
+    const [alert, setAlert] = useState({ open: false, type: 'error', message: '' })
     const navigate = useNavigate()
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         setIsLoading(true)
-        setTimeout(() => {
+        try {
+            const result = await login(credentials)
+            if (result.success) {
+                navigate('/dashboard')
+            } else {
+                setAlert({
+                    open: true,
+                    type: 'error',
+                    message: result.message
+                })
+            }
+        } catch (error) {
+            setAlert({
+                open: true,
+                type: 'error',
+                message: 'An unexpected error occurred. Please try again.'
+            })
+        } finally {
             setIsLoading(false)
-            navigate('/dashboard')
-        }, 1200)
+        }
+    }
+
+    const handleChange = (e) => {
+        const { id, value } = e.target
+        setCredentials(prev => ({ ...prev, [id]: value }))
     }
 
     return (
-        <div className="min-h-screen w-full flex bg-neutral-50">
-            {/* Left Side: Branding / Image Section */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 via-brand-700 to-neutral-900 items-center justify-center relative overflow-hidden">
-                {/* Decorative background elements */}
-                <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-brand-500 opacity-10 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/20 to-transparent"></div>
+        <div className="min-h-screen w-full flex items-center justify-center bg-[#f8f9fa] p-5 font-sans text-start">
+            <AlertMessage
+                isOpen={alert.open}
+                type={alert.type}
+                message={alert.message}
+                onClose={() => setAlert({ ...alert, open: false })}
+            />
 
-                <div className="relative z-10 text-center px-12 space-y-8 max-w-md">
-                    <div className="mx-auto w-24 h-24 bg-white rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-3xl transition-shadow duration-300 group cursor-pointer">
-                        <i className="fa-solid fa-mug-hot text-[48px] text-brand-600 group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    <div className="space-y-4">
-                        <h2 className="text-4xl lg:text-5xl font-display font-bold text-white tracking-tight leading-tight">
-                            Tufu Coffee<br />
-                            <span className="bg-gradient-to-r from-amber-300 to-amber-100 bg-clip-text text-transparent">Administration</span>
-                        </h2>
-                        <p className="text-brand-100 text-lg font-medium leading-relaxed opacity-90">
-                            Streamlined coffee shop management built for modern businesses. Manage operations, analytics, and growth all in one place.
-                        </p>
-                    </div>
-
-                    {/* Features */}
-                    <div className="pt-8 space-y-3">
-                        <div className="flex items-center gap-3 text-white/80 hover:text-white transition-colors">
-                            <div className="h-1.5 w-1.5 rounded-full bg-amber-300"></div>
-                            <span className="text-sm font-medium">Real-time analytics</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-white/80 hover:text-white transition-colors">
-                            <div className="h-1.5 w-1.5 rounded-full bg-amber-300"></div>
-                            <span className="text-sm font-medium">Inventory management</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-white/80 hover:text-white transition-colors">
-                            <div className="h-1.5 w-1.5 rounded-full bg-amber-300"></div>
-                            <span className="text-sm font-medium">Secure and reliable</span>
-                        </div>
-                    </div>
+            <div className="w-full max-w-[500px] bg-white shadow-2xl rounded-xl overflow-hidden min-h-[400px]">
+                <div className="lg:absolute lg:top-5 lg:right-5 mb-5 lg:mb-0 text-right">
+                    <label htmlFor="language" className="font-bold text-sm mr-2 text-neutral-700">Change language:</label>
+                    <select
+                        id="language"
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        className="border border-neutral-300 rounded-md px-2 py-1 text-sm text-neutral-600 bg-white cursor-pointer outline-none hover:border-[#003399] focus:border-[#003399] transition-colors"
+                    >
+                        <option value="english">English</option>
+                        <option value="khmer">Khmer</option>
+                    </select>
                 </div>
-            </div>
+                {/* Login Form */}
+                <div className="w-full p-10 flex flex-col relative bg-white">
 
-            {/* Right Side: Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-8 bg-neutral-50">
-                <div className="w-full max-w-sm space-y-8">
-                    {/* Header */}
-                    <div className="space-y-3">
-                        <div className="lg:hidden flex items-center gap-3 mb-8">
-                            <div className="p-2.5 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl">
-                                <i className="fa-solid fa-mug-hot text-xl text-white"></i>
+                    {/* Logo Section */}
+                    <div className="flex justify-center mb-6">
+                        <div className="w-[150px] h-[130px] flex items-center justify-center">
+                            <img
+                                src="/logo-tufu.png"
+                                alt="TUFU Logo"
+                                className="max-w-full max-h-full object-contain"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                }}
+                            />
+                            <div className="hidden items-center justify-center bg-blue-50 rounded-2xl p-4">
+                                <i className="fa-solid fa-mug-hot text-5xl text-[#132d65]"></i>
                             </div>
-                            <span className="text-xl font-display font-bold tracking-tight text-neutral-900">TUFU COFFEE</span>
                         </div>
-                        <h1 className="text-3xl font-display font-bold text-neutral-900 tracking-tight">Welcome Back</h1>
-                        <p className="text-neutral-600 font-medium">Sign in to access your management dashboard.</p>
+                    </div>
+
+                    {/* Title */}
+                    <div className="relative mb-8">
+                        <h2 className="text-2xl font-medium text-neutral-800 pb-1">Login</h2>
+                        <div className="absolute bottom-0 left-0 h-[3px] w-6 bg-[#003399]"></div>
                     </div>
 
                     {/* Form */}
-                    <form className="space-y-5" onSubmit={handleSubmit}>
-                        {/* Email Input */}
-                        <div className="space-y-2.5">
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
-                            <div className="relative group">
-                                <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-lg text-neutral-400 group-focus-within:text-brand-600 transition-colors"></i>
-                                <input
-                                    type="email"
-                                    required
-                                    placeholder="admin@tufucoffee.com"
-                                    className="w-full h-10 px-3 rounded-md border border-slate-300 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors pl-10"
-                                />
-                            </div>
+                    <form id="loginForm" onSubmit={handleSubmit} className="flex flex-col flex-grow">
+                        <div className="relative flex items-center h-[50px] w-full my-3">
+                            <i className="fas fa-user absolute left-3 text-[#132d65]"></i>
+                            <input
+                                type="text"
+                                id="email"
+                                placeholder="Email"
+                                value={credentials.email}
+                                onChange={handleChange}
+                                required
+                                className="h-full w-full outline-none border-b-2 border-neutral-200 focus:border-[#003399] transition-all px-10 text-base font-medium placeholder:text-neutral-400"
+                            />
                         </div>
 
-                        {/* Password Input */}
-                        <div className="space-y-2.5">
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
-                            <div className="relative group">
-                                <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-lg text-neutral-400 group-focus-within:text-brand-600 transition-colors"></i>
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    required
-                                    placeholder="••••••••"
-                                    className="w-full h-10 px-3 rounded-md border border-slate-300 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors pl-10 pr-10"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
-                                >
-                                    {showPassword ? <i className="fa-solid fa-eye-slash text-lg"></i> : <i className="fa-solid fa-eye text-lg"></i>}
-                                </button>
-                            </div>
+                        <div className="relative flex items-center h-[50px] w-full my-3">
+                            <i className="fas fa-lock absolute left-3 text-[#132d65]"></i>
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Password"
+                                value={credentials.password}
+                                onChange={handleChange}
+                                required
+                                className="h-full w-full outline-none border-b-2 border-neutral-200 focus:border-[#003399] transition-all px-10 text-base font-medium placeholder:text-neutral-400"
+                            />
                         </div>
 
-                        {/* Remember & Forgot */}
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 cursor-pointer group">
-                                <input 
-                                    type="checkbox" 
-                                    className="w-4 h-4 rounded-md border-neutral-300 text-brand-600 focus:ring-brand-600 cursor-pointer" 
-                                />
-                                <span className="text-sm font-medium text-neutral-600 group-hover:text-neutral-900 transition-colors">Remember me</span>
-                            </label>
-                            <a href="#" className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
-                                Forgot password?
-                            </a>
+                        <div className="flex justify-center mt-10">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="relative flex items-center justify-center gap-2 bg-[#003399] text-white py-3 px-10 rounded-md font-semibold w-full max-w-[180px] transition-all hover:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg active:scale-95"
+                            >
+                                <span className={isLoading ? "opacity-0" : "opacity-100"}>Login</span>
+                                {isLoading && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                            </button>
                         </div>
-
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full h-10 bg-brand-600 hover:bg-brand-700 text-white rounded-md font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    <span>Signing in...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span>Sign In</span>
-                                    <i className="fa-solid fa-arrow-right text-sm"></i>
-                                </>
-                            )}
-                        </button>
                     </form>
-
-                    {/* Divider */}
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-neutral-200"></div>
-                        </div>
-                        <div className="relative flex justify-center text-xs">
-                            <span className="px-2 bg-neutral-50 text-neutral-500 font-medium">Enterprise Auth</span>
-                        </div>
-                    </div>
-
-                    {/* Security Notice */}
-                    <p className="text-center text-neutral-500 text-xs font-medium leading-relaxed">
-                        🔒 Your credentials are encrypted and secured with industry-standard protocols.
-                    </p>
                 </div>
             </div>
         </div>
     )
 }
 
-export default Login 
+export default Login

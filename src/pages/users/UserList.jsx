@@ -1,51 +1,60 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ChangePasswordModal from './ChangePasswordModal'
+import { userService } from '../../api/resourceApi'
+import LoadingSpinner from '../../components/LoadingSpinner'
+import AlertMessage from '../../components/AlertMessage'
+
 const UserList = () => {
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({ open: false, type: 'success', message: '' });
 
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', joined: 'Mar 12, 2024' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Staff', status: 'Active', joined: 'Feb 28, 2024' },
-    { id: 3, name: 'Mike Ross', email: 'mike@example.com', role: 'Customer', status: 'Inactive', joined: 'Jan 15, 2024' },
-    { id: 4, name: 'Harvey Specter', email: 'harvey@example.com', role: 'Admin', status: 'Active', joined: 'Jan 10, 2024' },
-    { id: 5, name: 'Donna Paulsen', email: 'donna@example.com', role: 'Super Admin', status: 'Active', joined: 'Dec 05, 2023' },
-  ]
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await userService.getUsers();
+      setUsers(response.data.data);
+    } catch (error) {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: 'Failed to fetch users. Please try again later.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const statusColors = {
     Active: 'bg-emerald-100 text-emerald-700',
     Inactive: 'bg-slate-100 text-slate-700',
   }
 
-  // Modal States
-  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-
   // Handlers
   const handleCreateUser = () => {
     navigate('/users/create');
-  };
-
-  const handleEditUser = (user) => {
-    navigate(`/users/edit/${user.id}`);
   };
 
   const handleViewUser = (user) => {
     navigate(`/users/${user.id}`);
   };
 
-  const handleChangePassword = (user) => {
-    setSelectedUser(user);
-    setIsPasswordOpen(true);
-  };
-
-  const handleSavePassword = (userId, newPassword) => {
-    // In a real app, make API call here
-    console.log('Changed password for user:', userId);
-  };
+  if (loading) return <LoadingSpinner fullPage text="Fetching users..." />;
 
   return (
     <div className="space-y-6">
+      <AlertMessage 
+        isOpen={alert.open} 
+        type={alert.type} 
+        message={alert.message} 
+        onClose={() => setAlert({ ...alert, open: false })} 
+      />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
@@ -83,54 +92,51 @@ const UserList = () => {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Joined Date</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 font-bold">
-                      {user.name.charAt(0)}
+              {users.length > 0 ? (
+                users.map((user) => (
+                  <tr 
+                    key={user.id} 
+                    onClick={() => handleViewUser(user)}
+                    className="hover:bg-slate-50 transition-colors cursor-pointer group/row"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 font-bold uppercase">
+                        {user.username?.charAt(0) || 'U'}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900">{user.username}</span>
+                        <span className="text-xs text-slate-400">{user.email}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-900">{user.name}</span>
-                      <span className="text-xs text-slate-400">{user.email}</span>
-                    </div>
-                  </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{user.role}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold ${statusColors[user.status]}`}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{user.joined}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium pr-6">
-                    <div className="flex items-center justify-end gap-2">
-                     <button onClick={() => handleViewUser(user)} className="p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="View Details">
-                        <i className="fa-solid fa-eye text-sm"></i>
-                     </button>
-                     <button onClick={() => handleEditUser(user)} className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Edit User">
-                        <i className="fa-solid fa-pen text-sm"></i>
-                     </button>
-                     <button onClick={() => handleChangePassword(user)} className="p-2 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Change Password">
-                        <i className="fa-solid fa-key text-sm"></i>
-                     </button>
-                     <button className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete User">
-                        <i className="fa-solid fa-trash text-sm"></i>
-                     </button>
-                    </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{user.role_name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                      <span className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold ${user.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                        {user.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                      {user.joined_date ? new Date(user.joined_date).toLocaleDateString() : 'N/A'}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-6 py-12 text-center text-slate-400 font-medium">
+                    No users found in the system.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
         
         <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Showing 5 of 64 users</span>
+           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Showing {users.length} users</span>
            <div className="flex items-center gap-2">
               <button className="px-4 py-2 text-xs font-bold text-slate-400 border border-slate-200 rounded-lg opacity-50 cursor-not-allowed uppercase tracking-wider">Prev</button>
               <button className="px-4 py-2 text-xs font-bold text-blue-600 border border-blue-600 rounded-lg uppercase tracking-wider">Next</button>
@@ -138,13 +144,6 @@ const UserList = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      <ChangePasswordModal 
-        isOpen={isPasswordOpen} 
-        onClose={() => setIsPasswordOpen(false)} 
-        user={selectedUser} 
-        onSave={handleSavePassword} 
-      />
     </div>
   )
 }

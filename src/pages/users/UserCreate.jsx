@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { userService } from '../../api/resourceApi';
 import UserForm from './UserForm';
+import AlertMessage from '../../components/AlertMessage';
 
 const UserCreate = () => {
   const navigate = useNavigate();
+  const [alert, setAlert] = useState({ open: false, type: 'success', message: '' });
 
-  const handleSubmit = (formData) => {
-    console.log('Create user:', formData);
-    navigate('/users');
+  const handleSubmit = async (formData) => {
+    try {
+      await userService.createUser(formData);
+      setAlert({
+        open: true,
+        type: 'success',
+        message: 'User created successfully!'
+      });
+      setTimeout(() => navigate('/users'), 1500);
+    } catch (error) {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: error.response?.data?.message || 'Failed to create user. Please try again.'
+      });
+    }
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
+      <AlertMessage 
+        isOpen={alert.open} 
+        type={alert.type} 
+        message={alert.message} 
+        onClose={() => setAlert({ ...alert, open: false })} 
+      />
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">

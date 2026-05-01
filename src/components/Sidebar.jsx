@@ -1,8 +1,9 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-
+import { useAuth } from '../hooks/useAuth'
 
 const Sidebar = ({ isOpen = true }) => {
+  const { hasPermission } = useAuth()
   const location = useLocation()
   const [expandedMenus, setExpandedMenus] = React.useState({})
   
@@ -12,23 +13,25 @@ const Sidebar = ({ isOpen = true }) => {
   }
 
   const menuItems = [
-    { title: 'Dashboard', icon: 'fa-solid fa-gauge', path: '/dashboard' },
-    { title: 'User Profile', icon: 'fa-solid fa-users', path: '/users' },
-    { title: 'Order', icon: 'fa-solid fa-cart-shopping', path: '/order' },
-    { title: 'Product', icon: 'fa-solid fa-box', path: '/product' },
+    { title: 'Dashboard', icon: 'fa-solid fa-gauge', path: '/dashboard', permission: 'VIEW_DASHBOARD' },
+    { title: 'User', icon: 'fa-solid fa-users', path: '/users', permission: 'READ_USER' },
+    { title: 'Order', icon: 'fa-solid fa-cart-shopping', path: '/orders', permission: 'READ_ORDER' },
+    { title: 'Product', icon: 'fa-solid fa-box', path: '/products', permission: 'READ_PRODUCT' },
     { 
       title: 'Settings', 
       icon: 'fa-solid fa-gear', 
       path: '/settings', 
+      permission: 'READ_SETTING',
       hasDropdown: true,
       subItems: [
-        { title: 'General', path: '/settings/general' },
+        { title: 'Brand', path: '/settings/Brand' },
         { title: 'Security', path: '/settings/security' },
         { title: 'Notifications', path: '/settings/notifications' }
       ]
     },
-
   ]
+
+  const filteredMenuItems = menuItems.filter(item => !item.permission || hasPermission(item.permission))
 
   const isActive = (path) => location.pathname === path
 
@@ -116,7 +119,7 @@ const Sidebar = ({ isOpen = true }) => {
           <p className="mb-4 px-4 text-[11px] font-semibold text-slate-400">
             MENU
           </p>
-          {renderNavItems(menuItems)}
+          {renderNavItems(filteredMenuItems)}
         </div>
       </nav>
     </div>

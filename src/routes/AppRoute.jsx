@@ -7,6 +7,7 @@ import UserEdit from '../pages/users/UserEdit'
 import UserDetail from '../pages/users/UserDetail'
 import Dashboard from '../pages/dashboard/Dashboard'
 import MainLayouts from '../layouts/MainLayouts'
+import ProtectedRoute from '../components/ProtectedRoute'
 
 const AppRoute = () => {
     return (
@@ -15,12 +16,12 @@ const AppRoute = () => {
             <Route path="/login" element={<Login />} />
 
             {/* Protected Admin Routes */}
-            <Route element={<MainLayouts />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/users" element={<UserList />} />
-                <Route path="/users/create" element={<UserCreate />} />
-                <Route path="/users/edit/:id" element={<UserEdit />} />
-                <Route path="/users/:id" element={<UserDetail />} />
+            <Route element={<ProtectedRoute><MainLayouts /></ProtectedRoute>}>
+                <Route path="/dashboard" element={<ProtectedRoute requiredPermission="VIEW_DASHBOARD"><Dashboard /></ProtectedRoute>} />
+                <Route path="/users" element={<ProtectedRoute requiredPermission="READ_USER"><UserList /></ProtectedRoute>} />
+                <Route path="/users/create" element={<ProtectedRoute requiredPermission="CREATE_USER"><UserCreate /></ProtectedRoute>} />
+                <Route path="/users/edit/:id" element={<ProtectedRoute requiredPermission="UPDATE_USER"><UserEdit /></ProtectedRoute>} />
+                <Route path="/users/:id" element={<ProtectedRoute requiredPermission="READ_USER"><UserDetail /></ProtectedRoute>} />
                 <Route path="/orders" element={<div className="p-8">Orders Page (Coming Soon)</div>} />
                 <Route path="/products" element={<div className="p-8">Products Page (Coming Soon)</div>} />
                 <Route path="/settings" element={<div className="p-8">Settings Page (Coming Soon)</div>} />

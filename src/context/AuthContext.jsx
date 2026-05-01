@@ -1,68 +1,59 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../api/resourceApi';
 
-// Cart Context Definition
-const CartContext = createContext();
+export const AuthContext = createContext();
 
-export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem('tufu_cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Persist cart to local storage
   useEffect(() => {
-    localStorage.setItem('tufu_cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-  const addToCart = (product) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prevItems, { ...product, quantity: 1 }];
-    });
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = async (credentials) => {
+    try {
+      const response = await authService.login(credentials);
+      const { token, ...userData } = response.data.data;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      setUser(userData);
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Login failed. Please check your credentials.'
+      };
+    }
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
   };
 
-  const updateQuantity = (productId, quantity) => {
-    if (quantity < 1) return removeFromCart(productId);
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
+  const hasPermission = (permission) => {
+    if (!user || !user.permissions) return false;
+    if (Array.isArray(permission)) {
+      return permission.some(p => user.permissions.includes(p));
+    }
+    return user.permissions.includes(permission);
   };
-
-  const clearCart = () => setCartItems([]);
-
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{
-      cartItems,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      cartTotal,
-      cartCount
-    }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, hasPermission }}>
       {children}
-    </CartContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
-};
