@@ -17,6 +17,7 @@ import System from '../pages/setting/system/System'
 import RoleList from '../pages/setting/system/role-permission/RoleList'
 import RoleCreate from '../pages/setting/system/role-permission/RoleCreate'
 import RoleView from '../pages/setting/system/role-permission/RoleView'
+import ContentManagementSystem from '../pages/cms/ContentManagementSystem'
 
 const AppRoute = () => {
     return (
@@ -33,6 +34,7 @@ const AppRoute = () => {
                 <Route path="/users/:id" element={<ProtectedRoute requiredPermission="READ_USER"><UserDetail /></ProtectedRoute>} />
                 <Route path="/orders" element={<div className="font-medium text-slate-500">Orders Page (Coming Soon)</div>} />
                 <Route path="/products" element={<div className="font-medium text-slate-500">Products Page (Coming Soon)</div>} />
+                <Route path="/cms" element={<ContentManagementSystem/>} />
                 <Route path="/settings" element={<div className="font-medium text-slate-500">Settings Page (Coming Soon)</div>} />
                 <Route path="/settings/organization" element={<Organization/>} />
                 <Route path="/organization/employee" element={<ProtectedRoute requiredPermission="READ_USER"><EmployeeList /></ProtectedRoute>} />

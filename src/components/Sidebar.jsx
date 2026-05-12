@@ -6,7 +6,7 @@ const Sidebar = ({ isOpen = true }) => {
   const { hasPermission } = useAuth()
   const location = useLocation()
   const [expandedMenus, setExpandedMenus] = React.useState({})
-  
+
   const toggleDropdown = (title, e) => {
     e.preventDefault()
     setExpandedMenus(prev => ({ ...prev, [title]: !prev[title] }))
@@ -17,10 +17,11 @@ const Sidebar = ({ isOpen = true }) => {
     { title: 'User', icon: 'fa-solid fa-users', path: '/users', permission: 'READ_USER' },
     { title: 'Order', icon: 'fa-solid fa-cart-shopping', path: '/orders', permission: 'READ_ORDER' },
     { title: 'Product', icon: 'fa-solid fa-box', path: '/products', permission: 'READ_PRODUCT' },
-    { 
-      title: 'Settings', 
-      icon: 'fa-solid fa-gear', 
-      path: '/settings', 
+    { title: 'CMS', icon: 'fa-brands fa-modx', path: '/cms' },
+    {
+      title: 'Settings',
+      icon: 'fa-solid fa-gear',
+      path: '/settings',
       // permission: 'READ_SETTING',
       hasDropdown: true,
       subItems: [
@@ -42,11 +43,10 @@ const Sidebar = ({ isOpen = true }) => {
           {item.hasDropdown ? (
             <button
               onClick={(e) => toggleDropdown(item.title, e)}
-              className={`w-full group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                isActive(item.path) || expandedMenus[item.title]
+              className={`w-full group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive(item.path) || expandedMenus[item.title]
                   ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
+                }`}
             >
               <i className={`${item.icon} text-lg w-5 text-center`}></i>
               <span className="flex-1 text-left">{item.title}</span>
@@ -60,11 +60,10 @@ const Sidebar = ({ isOpen = true }) => {
           ) : (
             <Link
               to={item.path}
-              className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                isActive(item.path) || (item.title === 'Dashboard' && location.pathname === '/')
+              className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive(item.path) || (item.title === 'Dashboard' && location.pathname === '/')
                   ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
+                }`}
             >
               <i className={`${item.icon} text-lg w-5 text-center`}></i>
               <span className="flex-1">{item.title}</span>
@@ -83,11 +82,10 @@ const Sidebar = ({ isOpen = true }) => {
                 <Link
                   key={subItem.path}
                   to={subItem.path}
-                  className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive(subItem.path)
+                  className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive(subItem.path)
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   {subItem.title}
                 </Link>
