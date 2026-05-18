@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 const Dashboard = () => {
   const stats = [
     { label: 'Unique Visitors', value: '24.7K', change: '+20%', trend: 'up' },
@@ -23,41 +22,39 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 sm:space-y-8 animate-fade-in">
       {/* Header Section */}
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 font-medium tracking-tight mt-1">Welcome back! Here's your coffee shop performance.</p>
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+          <p className="text-sm sm:text-base text-slate-500 font-medium tracking-tight">Welcome back! Here's your coffee shop performance.</p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
+        <button className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 sm:px-6 sm:py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
           <i className="fa-solid fa-file-lines text-sm"></i>
           Generate Report
         </button>
       </header>
 
       {/* Stats Grid */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white border border-slate-200 shadow-sm rounded-lg p-6 flex flex-col justify-between cursor-pointer"
-            style={{
-              animationDelay: `${i * 100}ms`,
-            }}
+            className="bg-white border border-slate-200 shadow-sm rounded-xl p-4 sm:p-6 flex flex-col justify-between cursor-pointer"
+            style={{ animationDelay: `${i * 100}ms` }}
           >
-            <div className="mb-4">
-              <span className="text-[13px] font-semibold text-slate-500">{stat.label}</span>
+            <div className="mb-3 sm:mb-4">
+              <span className="text-[11px] sm:text-[13px] font-semibold text-slate-500">{stat.label}</span>
             </div>
-            <div className="flex items-end justify-between">
-              <h3 className="text-[28px] font-bold text-slate-800 leading-none">{stat.value}</h3>
-              <div className="flex items-center gap-2 pb-0.5">
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
+              <h3 className="text-2xl sm:text-[28px] font-bold text-slate-800 leading-none">{stat.value}</h3>
+              <div className="flex items-center gap-1 sm:gap-2 sm:pb-0.5">
+                <span className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] font-bold ${
                   stat.trend === 'up' ? 'bg-emerald-50 text-emerald-500' : 'bg-red-50 text-red-500'
                 }`}>
                   {stat.change}
                 </span>
-                <span className="text-[11px] font-medium text-slate-400">Vs last month</span>
+                <span className="hidden sm:block text-[11px] font-medium text-slate-400">Vs last month</span>
               </div>
             </div>
           </div>
@@ -65,23 +62,23 @@ const Dashboard = () => {
       </section>
 
       {/* Analytics Chart Full Width */}
-      <div className="w-full">
-        <section className="bg-white border border-slate-200 shadow-sm rounded-lg p-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
-            <div>
-              <h2 className="text-[18px] font-bold text-slate-800">Analytics</h2>
-              <p className="text-sm text-slate-500 mt-0.5">Visitor analytics of last 30 days</p>
-            </div>
-            
-            <div className="flex items-center rounded-md bg-slate-50 p-1 border border-slate-100">
-              <button className="px-4 py-1.5 text-[13px] font-medium bg-white text-slate-800 rounded shadow-sm">Monthly</button>
-              <button className="px-4 py-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-800">Quarterly</button>
-              <button className="px-4 py-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-800">Annually</button>
-            </div>
+      <section className="bg-white border border-slate-200 shadow-sm rounded-xl p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
+          <div>
+            <h2 className="text-base sm:text-[18px] font-bold text-slate-800">Analytics</h2>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Visitor analytics of last 30 days</p>
           </div>
 
-          {/* Bar Chart Area */}
-          <div className="relative w-full h-80">
+          <div className="flex items-center rounded-md bg-slate-50 p-1 border border-slate-100 self-start sm:self-auto">
+            <button className="px-3 sm:px-4 py-1.5 text-[12px] sm:text-[13px] font-medium bg-white text-slate-800 rounded shadow-sm">Monthly</button>
+            <button className="px-3 sm:px-4 py-1.5 text-[12px] sm:text-[13px] font-medium text-slate-500 hover:text-slate-800">Quarterly</button>
+            <button className="px-3 sm:px-4 py-1.5 text-[12px] sm:text-[13px] font-medium text-slate-500 hover:text-slate-800">Annually</button>
+          </div>
+        </div>
+
+        {/* Bar Chart Area — horizontally scrollable on mobile */}
+        <div className="relative w-full overflow-x-auto">
+          <div className="relative h-64 sm:h-80 min-w-[480px]">
             {/* Horizontal Grid Lines */}
             <div className="absolute inset-0 flex flex-col justify-between text-[11px] text-slate-400 pb-8">
               <div className="flex w-full items-center border-b border-slate-100 pb-2"><span>400</span></div>
@@ -104,8 +101,64 @@ const Dashboard = () => {
               ))}
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* Recent Orders Table — card layout on mobile */}
+      <section className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden">
+        <div className="px-4 sm:px-6 py-4 border-b border-slate-100">
+          <h2 className="text-base sm:text-[18px] font-bold text-slate-800">Recent Orders</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Latest transactions from your coffee shop</p>
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Order</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Product</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {recentOrders.map((order) => (
+                <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-4 text-sm font-mono font-semibold text-slate-700">{order.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-900">{order.customer}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{order.product}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-slate-900">{order.amount}</td>
+                  <td className="px-6 py-4"><span className={statusStyles[order.status]}>{order.status}</span></td>
+                  <td className="px-6 py-4 text-sm text-slate-400">{order.date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile card list */}
+        <div className="sm:hidden divide-y divide-slate-100">
+          {recentOrders.map((order) => (
+            <div key={order.id} className="px-4 py-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold text-slate-700">{order.id}</span>
+                <span className={statusStyles[order.status]}>{order.status}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-900">{order.customer}</span>
+                <span className="text-sm font-bold text-slate-900">{order.amount}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500">{order.product}</span>
+                <span className="text-xs text-slate-400">{order.date}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

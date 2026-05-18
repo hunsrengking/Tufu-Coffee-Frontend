@@ -5,50 +5,50 @@ import ChangePasswordModal from './ChangePasswordModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import AlertMessage from '../../components/AlertMessage';
 
+const InfoRow = ({ icon, iconBg, iconColor, label, children }) => (
+  <div className="flex items-center justify-between py-4 border-b border-slate-100 last:border-0 group">
+    <div className="flex items-center gap-3">
+      <span className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${iconBg} ${iconColor}`}>
+        <i className={`${icon} text-sm`}></i>
+      </span>
+      <span className="text-sm font-medium text-slate-500">{label}</span>
+    </div>
+    <div className="text-sm font-semibold text-slate-800 text-right max-w-[55%] break-all">
+      {children}
+    </div>
+  </div>
+);
+
 const UserDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [alert, setAlert] = useState({ open: false, type: 'success', message: '' });
 
   const fetchUser = async () => {
     try {
       setLoading(true);
       const response = await userService.getUser(id);
-      // API returns: { status: 'success', message: '...', data: { ... } }
       setUser(response.data.data);
     } catch (error) {
-      setAlert({
-        open: true,
-        type: 'error',
-        message: 'Failed to fetch user details.'
-      });
+      setAlert({ open: true, type: 'error', message: 'Failed to fetch user details.' });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, [id]);
+  useEffect(() => { fetchUser(); }, [id]);
 
   const handleSavePassword = async (userId, passwordData) => {
     try {
       await userService.changePassword(userId, passwordData);
-      setAlert({
-        open: true,
-        type: 'success',
-        message: 'Password updated successfully!'
-      });
+      setAlert({ open: true, type: 'success', message: 'Password updated successfully!' });
       setIsPasswordOpen(false);
     } catch (error) {
-      setAlert({
-        open: true,
-        type: 'error',
-        message: error.response?.data?.message || 'Failed to update password.'
-      });
+      setAlert({ open: true, type: 'error', message: error.response?.data?.message || 'Failed to update password.' });
     }
   };
 
@@ -56,15 +56,9 @@ const UserDetail = () => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
         await userService.deleteUser(id);
-        navigate('/users', {
-          state: { message: 'User deleted successfully!', type: 'success' }
-        });
+        navigate('/users', { state: { message: 'User deleted successfully!', type: 'success' } });
       } catch (error) {
-        setAlert({
-          open: true,
-          type: 'error',
-          message: 'Failed to delete user.'
-        });
+        setAlert({ open: true, type: 'error', message: 'Failed to delete user.' });
       }
     }
   };
@@ -72,143 +66,208 @@ const UserDetail = () => {
   if (loading) return <LoadingSpinner fullPage text="Loading user profile..." />;
   if (!user) return <div className="p-8 text-center text-slate-500 font-medium">User not found.</div>;
 
+  const initials = (user.username || 'U').slice(0, 2).toUpperCase();
+
   return (
     <div className="space-y-6 animate-fade-in">
-      <AlertMessage 
-        isOpen={alert.open} 
-        type={alert.type} 
-        message={alert.message} 
-        onClose={() => setAlert({ ...alert, open: false })} 
+      <AlertMessage
+        isOpen={alert.open}
+        type={alert.type}
+        message={alert.message}
+        onClose={() => setAlert({ ...alert, open: false })}
       />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Page Header */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-            <button onClick={() => navigate('/users')} className="hover:text-blue-600 transition-colors">Users</button>
-            <i className="fa-solid fa-chevron-right text-[10px]"></i>
-            <span className="text-slate-900 font-medium">User Details</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Profile</h1>
-          <p className="text-slate-500 font-medium tracking-tight mt-1">Detailed information about this user account.</p>
-        </div>
-        <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
-          <button
-            onClick={() => navigate(`/users/edit/${id}`)}
-            className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-600"
-          >
-            <i className="fa-solid fa-pen text-xs"></i>
-            Edit User
-          </button>
-          <div className="w-px h-4 bg-slate-200"></div>
-          <button
-            onClick={() => setIsPasswordOpen(true)}
-            className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-amber-50 hover:text-amber-600"
-          >
-            <i className="fa-solid fa-key text-xs"></i>
-            Password
-          </button>
-          <div className="w-px h-4 bg-slate-200"></div>
-          <button
-            onClick={handleDelete}
-            className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-red-600 transition-all hover:bg-red-50"
-          >
-            <i className="fa-solid fa-trash text-xs"></i>
-            Delete
-          </button>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 text-xs text-slate-400 mb-2">
+            <button
+              onClick={() => navigate('/users')}
+              className="hover:text-blue-600 transition-colors font-medium"
+            >
+              Users
+            </button>
+            <i className="fa-solid fa-chevron-right text-[9px]"></i>
+            <span className="text-slate-600 font-medium">Profile</span>
+          </nav>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">User Profile</h1>
+          <p className="text-sm text-slate-400 mt-0.5">View and manage this account's details and permissions.</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden w-full">
-        {/* Header Profile */}
-        <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-center sm:text-left flex flex-col sm:flex-row items-center gap-6">
-          <div className="h-24 w-24 flex-shrink-0 flex items-center justify-center rounded-full bg-white text-4xl font-bold text-blue-600 shadow-lg border-4 border-white/20 uppercase">
-            {user.username?.charAt(0) || 'U'}
+      {/* Profile Card */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+        {/* Banner — no overflow-hidden so dropdown can escape */}
+        <div className="relative bg-gradient-to-br from-slate-800 via-blue-900 to-blue-800 px-6 sm:px-10 pt-10 pb-16">
+
+          {/* Decorative rings — clipped inside their own layer */}
+          <div className="absolute inset-0 overflow-hidden rounded-t-2xl pointer-events-none">
+            <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full border border-white/5"></div>
+            <div className="absolute -top-6 -right-6 h-48 w-48 rounded-full border border-white/5"></div>
+            <div className="absolute top-4 right-20 h-32 w-32 rounded-full border border-white/5"></div>
+            <div className="absolute bottom-0 left-1/3 h-40 w-96 rounded-full bg-blue-500/20 blur-3xl"></div>
           </div>
-          <div className="text-white">
-            <h3 className="text-3xl font-bold">{user.username}</h3>
-            <p className="text-blue-100 font-medium mt-1 text-lg">{user.role_name}</p>
+
+          {/* ⋮ Actions button — top-right of banner */}
+          <div className="absolute top-4 right-4 z-10">
+            <div className="relative">
+              <button
+                onClick={() => setIsActionsOpen(prev => !prev)}
+                className={`flex items-center justify-center h-8 w-8 rounded-xl transition-all ${isActionsOpen ? 'bg-white/20' : 'bg-white/10 hover:bg-white/20'}`}
+                aria-label="Actions"
+              >
+                <i className="fa-solid fa-ellipsis-vertical text-white text-sm"></i>
+              </button>
+
+              {isActionsOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsActionsOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50" style={{maxWidth: 'calc(100vw - 2rem)'}}>
+                    <div className="px-3 pb-2 mb-1 border-b border-slate-100">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Actions</p>
+                    </div>
+                    <button
+                      onClick={() => { setIsActionsOpen(false); navigate(`/users/edit/${id}`); }}
+                      className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                        <i className="fa-solid fa-pen-to-square text-xs"></i>
+                      </span>
+                      <div className="text-left">
+                        <p className="font-semibold text-slate-800 text-[13px]">Edit Profile</p>
+                        <p className="text-[11px] text-slate-400">Update user information</p>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => { setIsActionsOpen(false); setIsPasswordOpen(true); }}
+                      className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                        <i className="fa-solid fa-key text-xs"></i>
+                      </span>
+                      <div className="text-left">
+                        <p className="font-semibold text-slate-800 text-[13px]">Change Password</p>
+                        <p className="text-[11px] text-slate-400">Reset account credentials</p>
+                      </div>
+                    </button>
+                    <div className="my-2 mx-3 border-t border-slate-100"></div>
+                    <button
+                      onClick={() => { setIsActionsOpen(false); handleDelete(); }}
+                      className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50 text-red-500">
+                        <i className="fa-solid fa-trash text-xs"></i>
+                      </span>
+                      <div className="text-left">
+                        <p className="font-semibold text-red-600 text-[13px]">Delete Account</p>
+                        <p className="text-[11px] text-red-400">Permanently remove user</p>
+                      </div>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Body Information */}
-        <div className="p-8">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6 border-b border-slate-100 pb-3">Account Information</h4>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-6">
-            <div className="flex gap-4 items-start">
-              <div className="mt-1 text-blue-500 bg-blue-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fa-solid fa-envelope text-lg"></i>
+          <div className="relative flex flex-col sm:flex-row items-center sm:items-end gap-5">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-2xl border-2 border-white/20 uppercase select-none">
+                {initials}
               </div>
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email Address</p>
-                <p className="text-base font-medium text-slate-900 break-all">{user.email}</p>
-              </div>
+              {/* Online dot */}
+              <span className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white shadow-sm ${user.is_active ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
             </div>
 
-            <div className="flex gap-4 items-start">
-              <div className="mt-1 text-sky-500 bg-sky-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fa-solid fa-envelope-circle-check text-lg"></i>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Recovery Email</p>
-                <p className="text-base font-medium text-slate-900 break-all">{user.recovery_email || 'None Set'}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="mt-1 text-emerald-500 bg-emerald-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fa-solid fa-shield-halved text-lg"></i>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Role Level</p>
-                <p className="text-base font-medium text-slate-900">{user.role_name}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="mt-1 text-amber-500 bg-amber-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fa-solid fa-calendar-day text-lg"></i>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Joined Date</p>
-                <p className="text-base font-medium text-slate-900">
-                  {user.joined_date ? new Date(user.joined_date).toLocaleDateString() : 'N/A'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="mt-1 text-purple-500 bg-purple-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fa-solid fa-signal text-lg"></i>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Account Status</p>
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold mt-1 ${user.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
-                  }`}>
+            {/* Identity */}
+            <div className="text-center sm:text-left pb-1">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{user.username}</h2>
+                <span className={`self-center inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${
+                  user.is_active
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    : 'bg-slate-500/20 text-slate-300 border-slate-500/30'
+                }`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
                   {user.is_active ? 'Active' : 'Inactive'}
                 </span>
               </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="mt-1 text-rose-500 bg-rose-50 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i className="fa-solid fa-id-badge text-lg"></i>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Linked Employee</p>
-                <p className="text-base font-medium text-slate-900">{user.employee_name || 'Not Linked'}</p>
-              </div>
+              <p className="text-blue-200 text-sm font-medium mt-1">{user.role_name} · {user.email}</p>
             </div>
           </div>
+        </div>
 
+
+
+        {/* Account Information */}
+        <div className="px-6 sm:px-10 pt-6 pb-8">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-sm font-bold text-slate-700">Account Details</h3>
+          </div>
+          <p className="text-xs text-slate-400 mb-5">Contact and authentication information for this user.</p>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-4 divide-y divide-slate-100">
+            <InfoRow icon="fa-solid fa-at" iconBg="bg-blue-50" iconColor="text-blue-500" label="Email Address">
+              <a href={`mailto:${user.email}`} className="text-blue-600 hover:underline">{user.email}</a>
+            </InfoRow>
+            <InfoRow icon="fa-solid fa-envelope-circle-check" iconBg="bg-sky-50" iconColor="text-sky-500" label="Recovery Email">
+              {user.recovery_email
+                ? <a href={`mailto:${user.recovery_email}`} className="text-blue-600 hover:underline">{user.recovery_email}</a>
+                : <span className="text-slate-400 font-medium italic">Not configured</span>
+              }
+            </InfoRow>
+            <InfoRow icon="fa-solid fa-shield-halved" iconBg="bg-emerald-50" iconColor="text-emerald-500" label="Role & Permissions">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold">
+                <i className="fa-solid fa-check text-[10px]"></i>
+                {user.role_name}
+              </span>
+            </InfoRow>
+            <InfoRow icon="fa-solid fa-toggle-on" iconBg="bg-purple-50" iconColor="text-purple-500" label="Account Status">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${
+                user.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                {user.is_active ? 'Active' : 'Inactive'}
+              </span>
+            </InfoRow>
+            <InfoRow icon="fa-solid fa-calendar-day" iconBg="bg-amber-50" iconColor="text-amber-500" label="Date Joined">
+              {user.joined_date
+                ? new Date(user.joined_date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })
+                : <span className="text-slate-400 font-medium italic">Not recorded</span>
+              }
+            </InfoRow>
+            <InfoRow icon="fa-solid fa-id-badge" iconBg="bg-rose-50" iconColor="text-rose-500" label="Linked Employee">
+              {user.employee_name
+                ? <span className="text-slate-800">{user.employee_name}</span>
+                : <span className="text-slate-400 font-medium italic">No employee linked</span>
+              }
+            </InfoRow>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 sm:px-10 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-xs text-slate-400">
+            <i className="fa-solid fa-circle-info mr-1.5"></i>
+            User ID: <span className="font-mono font-semibold text-slate-600">#{id}</span>
+          </p>
+          <button
+            onClick={() => navigate('/users')}
+            className="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors"
+          >
+            <i className="fa-solid fa-arrow-left text-[10px]"></i>
+            Back to Users
+          </button>
         </div>
       </div>
 
-      <ChangePasswordModal 
-        isOpen={isPasswordOpen} 
-        onClose={() => setIsPasswordOpen(false)} 
-        user={user} 
-        onSave={handleSavePassword} 
+      <ChangePasswordModal
+        isOpen={isPasswordOpen}
+        onClose={() => setIsPasswordOpen(false)}
+        user={user}
+        onSave={handleSavePassword}
       />
     </div>
   );
