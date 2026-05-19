@@ -131,23 +131,23 @@ const RoleView = () => {
 
             {/* Header Profile */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-6 md:p-8 space-y-4">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="space-y-4 flex-1">
-                            <div className="grid grid-cols-[100px_1fr] gap-4">
-                                <span className="text-sm font-bold text-slate-500">Name</span>
+                <div className="p-5 sm:p-8 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div className="space-y-3 flex-1">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-24 shrink-0">Name</span>
                                 <span className="text-sm font-bold text-slate-900">{role.name}</span>
                             </div>
-                            <div className="grid grid-cols-[100px_1fr] gap-4">
-                                <span className="text-sm font-bold text-slate-500">Description</span>
+                            <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-24 shrink-0">Description</span>
                                 <span className="text-sm font-medium text-slate-600">{role.description || 'No description provided.'}</span>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-1 self-start md:self-center bg-blue-900 p-1 rounded-lg shadow-lg">
+                        <div className="flex items-center gap-1 self-start bg-blue-900 p-1 rounded-lg shadow-lg">
                             <button
                                 onClick={() => isEditing ? handleCancelEdit() : setIsEditing(true)}
-                                className={`px-4 py-2 text-[11px] font-bold text-white uppercase hover:bg-blue-800 transition-colors border-r border-blue-800 flex items-center gap-1.5 ${isEditing ? 'bg-rose-700' : ''}`}
+                                className={`px-3 sm:px-4 py-2 text-[11px] font-bold text-white uppercase hover:bg-blue-800 transition-colors border-r border-blue-800 flex items-center gap-1.5 ${isEditing ? 'bg-rose-700' : ''}`}
                             >
                                 {isEditing ? (
                                     <><i className="fa-solid fa-xmark"></i> Cancel</>
@@ -155,10 +155,10 @@ const RoleView = () => {
                                     <><i className="fa-solid fa-pen-to-square"></i> Edit</>
                                 )}
                             </button>
-                            <button className="px-4 py-2 text-[11px] font-bold text-white uppercase hover:bg-blue-800 transition-colors border-r border-blue-800">
+                            <button className="px-3 sm:px-4 py-2 text-[11px] font-bold text-white uppercase hover:bg-blue-800 transition-colors border-r border-blue-800">
                                 Disable
                             </button>
-                            <button className="px-4 py-2 text-[11px] font-bold text-white uppercase hover:bg-blue-800 transition-colors">
+                            <button className="px-3 sm:px-4 py-2 text-[11px] font-bold text-white uppercase hover:bg-blue-800 transition-colors">
                                 Delete
                             </button>
                         </div>
@@ -168,30 +168,48 @@ const RoleView = () => {
 
             {/* Permissions Section */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
-                    <h2 className="text-2xl font-bold text-slate-700">Permissions: <span className="text-slate-900">{activeGroup}</span></h2>
+                <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/30">
+                    <h2 className="text-lg sm:text-2xl font-bold text-slate-700">Permissions: <span className="text-slate-900">{activeGroup}</span></h2>
                     {isEditing && (
                         <button
                             onClick={handleSavePermissions}
                             disabled={saving}
-                            className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50 animate-fade-in"
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50 animate-fade-in"
                         >
                             {saving ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-save"></i>}
-                            Submit
+                            Save Permissions
                         </button>
                     )}
                 </div>
 
-                <div className="flex flex-col md:flex-row h-[500px]">
-                    {/* Sidebar */}
-                    <div className="w-full md:w-64 bg-slate-50/50 border-r border-slate-100 overflow-y-auto">
+                {/* Mobile: horizontal scrollable tab strip */}
+                <div className="flex md:hidden overflow-x-auto border-b border-slate-100 bg-slate-50/50 scrollbar-hide">
+                    {groups.map(group => (
+                        <button
+                            key={group}
+                            onClick={() => setActiveGroup(group)}
+                            className={`flex-shrink-0 px-4 py-3 text-xs font-bold transition-all whitespace-nowrap border-b-2 ${
+                                activeGroup === group
+                                    ? 'text-blue-600 border-blue-600 bg-white'
+                                    : 'text-slate-500 border-transparent hover:text-slate-700'
+                            }`}
+                        >
+                            {group}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex flex-col md:flex-row" style={{ height: '480px' }}>
+                    {/* Desktop: sidebar */}
+                    <div className="hidden md:block w-64 bg-slate-50/50 border-r border-slate-100 overflow-y-auto">
                         <div className="divide-y divide-slate-100">
                             {groups.map(group => (
                                 <button
                                     key={group}
                                     onClick={() => setActiveGroup(group)}
-                                    className={`w-full text-left px-6 py-4 text-sm font-bold transition-all hover:bg-slate-100 flex items-center justify-between group ${activeGroup === group ? 'bg-white text-blue-600 border-l-4 border-blue-600' : 'text-slate-500'
-                                        }`}
+                                    className={`w-full text-left px-6 py-4 text-sm font-bold transition-all hover:bg-slate-100 flex items-center justify-between group ${
+                                        activeGroup === group ? 'bg-white text-blue-600 border-l-4 border-blue-600' : 'text-slate-500'
+                                    }`}
                                 >
                                     <span className="uppercase tracking-tight">{group}</span>
                                     <i className={`fa-solid fa-chevron-right text-[10px] transition-transform ${activeGroup === group ? 'translate-x-1' : 'opacity-0 group-hover:opacity-100'}`}></i>
@@ -201,17 +219,17 @@ const RoleView = () => {
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col bg-white">
+                    <div className="flex-1 flex flex-col bg-white overflow-y-auto">
                         {isEditing && (
-                            <div className="px-8 py-3 border-b border-slate-50 bg-slate-50/20 flex items-center gap-4 animate-fade-in">
-                                <button 
+                            <div className="px-5 sm:px-8 py-3 border-b border-slate-50 bg-slate-50/20 flex items-center gap-4 animate-fade-in">
+                                <button
                                     onClick={handleSelectAll}
                                     className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-700 flex items-center gap-1.5"
                                 >
                                     <i className="fa-solid fa-check-double"></i> Select All
                                 </button>
                                 <div className="h-3 w-px bg-slate-200"></div>
-                                <button 
+                                <button
                                     onClick={handleDeselectAll}
                                     className="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-rose-600 flex items-center gap-1.5"
                                 >
@@ -219,11 +237,11 @@ const RoleView = () => {
                                 </button>
                             </div>
                         )}
-                        <div className="flex-1 overflow-y-auto divide-y divide-slate-50">
+                        <div className="divide-y divide-slate-50">
                             {groupedPermissions[activeGroup]?.map(perm => (
                                 <label
                                     key={perm.id}
-                                    className={`flex items-center gap-4 px-8 py-4 transition-colors ${isEditing ? 'hover:bg-slate-50 cursor-pointer' : 'opacity-80 cursor-default'} group`}
+                                    className={`flex items-center gap-4 px-5 sm:px-8 py-4 transition-colors ${isEditing ? 'hover:bg-slate-50 cursor-pointer' : 'opacity-80 cursor-default'} group`}
                                 >
                                     <div className="relative flex items-center justify-center">
                                         <input
@@ -231,10 +249,11 @@ const RoleView = () => {
                                             checked={assignedPermissionIds.has(perm.id)}
                                             onChange={() => handleTogglePermission(perm.id)}
                                             disabled={!isEditing}
-                                            className={`peer h-5 w-5 appearance-none rounded border-2 transition-all ${isEditing
+                                            className={`peer h-5 w-5 appearance-none rounded border-2 transition-all ${
+                                                isEditing
                                                     ? 'border-slate-300 bg-white checked:bg-blue-600 checked:border-blue-600 cursor-pointer'
                                                     : 'border-slate-200 bg-slate-50 checked:bg-slate-400 checked:border-slate-400 cursor-default'
-                                                }`}
+                                            }`}
                                         />
                                         <i className="fa-solid fa-check absolute text-[10px] text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></i>
                                     </div>

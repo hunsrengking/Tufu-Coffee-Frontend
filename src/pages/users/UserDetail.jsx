@@ -99,10 +99,10 @@ const UserDetail = () => {
       {/* Profile Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
-        {/* Banner — no overflow-hidden so dropdown can escape */}
-        <div className="relative bg-gradient-to-br from-slate-800 via-blue-900 to-blue-800 px-6 sm:px-10 pt-10 pb-16">
+        {/* Banner */}
+        <div className="relative bg-gradient-to-br from-slate-800 via-blue-900 to-blue-800 px-6 sm:px-10 pt-10 pb-14">
 
-          {/* Decorative rings — clipped inside their own layer */}
+          {/* Decorative rings */}
           <div className="absolute inset-0 overflow-hidden rounded-t-2xl pointer-events-none">
             <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full border border-white/5"></div>
             <div className="absolute -top-6 -right-6 h-48 w-48 rounded-full border border-white/5"></div>
@@ -110,7 +110,7 @@ const UserDetail = () => {
             <div className="absolute bottom-0 left-1/3 h-40 w-96 rounded-full bg-blue-500/20 blur-3xl"></div>
           </div>
 
-          {/* ⋮ Actions button — top-right of banner */}
+          {/* ⋮ Actions button */}
           <div className="absolute top-4 right-4 z-10">
             <div className="relative">
               <button
@@ -124,7 +124,7 @@ const UserDetail = () => {
               {isActionsOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsActionsOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50" style={{maxWidth: 'calc(100vw - 2rem)'}}>
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50" style={{ maxWidth: 'calc(100vw - 2rem)' }}>
                     <div className="px-3 pb-2 mb-1 border-b border-slate-100">
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Actions</p>
                     </div>
@@ -171,36 +171,21 @@ const UserDetail = () => {
             </div>
           </div>
 
-          <div className="relative flex flex-col sm:flex-row items-center sm:items-end gap-5">
+          {/* Profile content — centered on mobile, left-aligned on desktop */}
+          <div className="relative flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-5">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
-              <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-2xl border-2 border-white/20 uppercase select-none">
+              <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-black shadow-2xl ring-4 ring-white/10 uppercase select-none">
                 {initials}
               </div>
-              {/* Online dot */}
-              <span className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white shadow-sm ${user.is_active ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
+              <span className={`absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-2 border-white shadow-sm ${user.is_active ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
             </div>
-
-            {/* Identity */}
+            {/* Name */}
             <div className="text-center sm:text-left pb-1">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{user.username}</h2>
-                <span className={`self-center inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${
-                  user.is_active
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                    : 'bg-slate-500/20 text-slate-300 border-slate-500/30'
-                }`}>
-                  <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
-                  {user.is_active ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-              <p className="text-blue-200 text-sm font-medium mt-1">{user.role_name} · {user.email}</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{user.username}</h2>
             </div>
           </div>
         </div>
-
-
-
         {/* Account Information */}
         <div className="px-6 sm:px-10 pt-6 pb-8">
           <div className="flex items-center gap-2 mb-1">
@@ -225,9 +210,8 @@ const UserDetail = () => {
               </span>
             </InfoRow>
             <InfoRow icon="fa-solid fa-toggle-on" iconBg="bg-purple-50" iconColor="text-purple-500" label="Account Status">
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${
-                user.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
-              }`}>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${user.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                }`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
                 {user.is_active ? 'Active' : 'Inactive'}
               </span>

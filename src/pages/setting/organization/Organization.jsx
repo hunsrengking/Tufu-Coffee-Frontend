@@ -7,10 +7,10 @@ const Organization = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Organization Settings</h1>
-                    <p className="text-slate-500 font-medium tracking-tight mt-1">Manage your organization's structure, branding, and office details.</p>
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Organization Settings</h1>
+                    <p className="text-sm text-slate-500 font-medium tracking-tight mt-1">Manage your organization's structure, branding, and office details.</p>
                 </div>
             </div>
 

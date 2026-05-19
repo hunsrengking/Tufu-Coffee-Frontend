@@ -159,8 +159,8 @@ const Login = () => {
                 onClose={() => setAlert({ ...alert, open: false })}
             />
 
-            <div className="w-full max-w-[480px] bg-white shadow-2xl rounded-3xl overflow-hidden animate-fade-in border border-slate-100">
-                <div className="p-10 flex flex-col bg-white">
+        <div className="w-full max-w-[480px] bg-white shadow-2xl rounded-3xl overflow-hidden animate-fade-in border border-slate-100">
+                <div className="p-7 sm:p-10 flex flex-col bg-white">
                     <div className="flex justify-center mb-8">
                         <div className="h-24 flex items-center justify-center">
                             <img

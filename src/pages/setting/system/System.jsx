@@ -7,10 +7,10 @@ const System = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">System Settings</h1>
-                    <p className="text-slate-500 font-medium tracking-tight mt-1">Manage system settings, roles, and permissions.</p>
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">System Settings</h1>
+                    <p className="text-sm text-slate-500 font-medium tracking-tight mt-1">Manage system settings, roles, and permissions.</p>
                 </div>
             </div>
 
